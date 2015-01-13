@@ -27,7 +27,7 @@ func handleConnection(conn net.Conn) {
 	return
 }
 
-func main() {
+func Talk() {
 	ln, err := net.Listen("tcp", ":7777")
 	if err != nil {
 		//handle err
@@ -39,6 +39,31 @@ func main() {
 			//handle err
 			continue
 		}
-		go handleConnection(conn)
+		idle := strconv.Itoa(get_idle())
+		conn.Write([]byte(idle))
+		conn.Close()
+		//go handleConnection(conn)
 	}
+}
+
+//func Listen() {
+//	ln, err := net.Listen("tcp", "localhost:8675")
+//	if err != nil {
+//		//handle err
+//	}
+//	defer ln.Close()
+//	for {
+//		conn, err := ln.Accept()
+//		if err != nil {
+//			//handle err
+//			continue
+//		}
+//		go handleConnection(conn)
+//	}
+//
+//}
+
+func main() {
+	go Talk()
+	//go Listen()
 }
