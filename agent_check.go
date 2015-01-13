@@ -32,6 +32,7 @@ func main() {
 	if err != nil {
 		//handle err
 	}
+	defer ln.Close()
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
