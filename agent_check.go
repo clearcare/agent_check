@@ -23,12 +23,12 @@ func get_idle() (out int) {
 	return int(idlePercent)
 }
 
-func handleTalk(conn net.Conn, command <-chan string) {
+func handleTalk(conn net.Conn, command <-chan []byte) {
 	log.Println("in handleTalk")
 	defer conn.Close()
 	select {
 	case msg := <-command:
-		conn.Write([]byte(msg))
+		conn.Write(msg)
 	default:
 		idle := strconv.Itoa(get_idle())
 		conn.Write([]byte(idle))
@@ -37,7 +37,7 @@ func handleTalk(conn net.Conn, command <-chan string) {
 	return
 }
 
-func handleListen(conn net.Conn, command chan string) {
+func handleListen(conn net.Conn, command chan []byte) {
 	log.Println("in handleListen")
 	defer conn.Close()
 	line, err := bufio.NewReader(conn).ReadBytes('\n')
@@ -52,7 +52,7 @@ func handleListen(conn net.Conn, command chan string) {
 	return
 }
 
-func Talk(ln net.Listener, command <-chan string) {
+func Talk(ln net.Listener, command chan []byte) {
 	log.Println("in talk")
 	defer ln.Close()
 	for {
@@ -67,7 +67,7 @@ func Talk(ln net.Listener, command <-chan string) {
 	}
 }
 
-func Listen(ln net.Listener, command <-chan string) {
+func Listen(ln net.Listener, command chan []byte) {
 	log.Println("in listen")
 	defer ln.Close()
 	for {
@@ -82,7 +82,7 @@ func Listen(ln net.Listener, command <-chan string) {
 }
 
 func main() {
-	command := make(chan string)
+	command := make(chan []byte, 1)
 	ln, err := net.Listen("tcp", ":7777")
 	if err != nil {
 		//handle err
