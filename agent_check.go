@@ -31,7 +31,7 @@ func handleTalk(conn net.Conn, command <-chan []byte) {
 		conn.Write(msg)
 	default:
 		idle := strconv.Itoa(get_idle())
-		conn.Write([]byte(idle))
+		conn.Write([]byte(idle + "\n"))
 		//conn.Close()
 	}
 	return
