@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"strconv"
-	"time"
 
 	linuxproc "github.com/c9s/goprocinfo/linux"
 )
@@ -23,22 +23,36 @@ func get_idle() (out int) {
 	return int(idlePercent)
 }
 
-func handleTalk(conn net.Conn) {
+func handleTalk(conn net.Conn, command <-chan string) {
+	log.Println("in handleTalk")
 	defer conn.Close()
-	idle := strconv.Itoa(get_idle())
-	conn.Write([]byte(idle))
+	select {
+	case msg := <-command:
+		conn.Write([]byte(msg))
+	default:
+		idle := strconv.Itoa(get_idle())
+		conn.Write([]byte(idle))
+		//conn.Close()
+	}
+	return
+}
+
+func handleListen(conn net.Conn, command chan string) {
+	log.Println("in handleListen")
+	defer conn.Close()
+	line, err := bufio.NewReader(conn).ReadBytes('\n')
+	if err != nil {
+		return
+	}
+	command <- line
+	conn.Write([]byte("OK"))
+	//daytime := time.Now().String()
+	//conn.Write([]byte(daytime))
 	//conn.Close()
 	return
 }
 
-func handleListen(conn net.Conn) {
-	defer conn.Close()
-	daytime := time.Now().String()
-	conn.Write([]byte(daytime))
-	//conn.Close()
-	return
-}
-func Talk(ln net.Listener) {
+func Talk(ln net.Listener, command <-chan string) {
 	log.Println("in talk")
 	defer ln.Close()
 	for {
@@ -49,11 +63,11 @@ func Talk(ln net.Listener) {
 			break
 			//continue
 		}
-		go handleTalk(conn)
+		go handleTalk(conn, command)
 	}
 }
 
-func Listen(ln net.Listener) {
+func Listen(ln net.Listener, command <-chan string) {
 	log.Println("in listen")
 	defer ln.Close()
 	for {
@@ -62,26 +76,26 @@ func Listen(ln net.Listener) {
 			//handle err
 			continue
 		}
-		go handleListen(conn)
+		go handleListen(conn, command)
 	}
 
 }
 
 func main() {
-	log.Println("hey hey hey")
+	command := make(chan string)
 	ln, err := net.Listen("tcp", ":7777")
 	if err != nil {
 		//handle err
 		log.Println("there was an error:", err)
 	}
-	go Talk(ln)
+	go Talk(ln, command)
 
 	ln2, err := net.Listen("tcp", ":8675")
 	if err != nil {
 		//handle err
 		log.Println("there was an error:", err)
 	}
-	go Listen(ln2)
+	go Listen(ln2, command)
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
