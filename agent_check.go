@@ -84,7 +84,7 @@ func main() {
 	}
 	go Talk(ln, command)
 
-	ln2, err := net.Listen("tcp", ":8675")
+	ln2, err := net.Listen("tcp", "localhost:8675")
 	if err != nil {
 		log.Fatalln("there was an error:", err)
 	}
