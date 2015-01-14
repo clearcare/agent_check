@@ -77,7 +77,7 @@ func Listen(ln net.Listener, command chan []byte) {
 
 func main() {
 	command := make(chan []byte, 1)
-	ln, err := net.Listen("tcp", ":7777")
+	ln, err := net.Listen("tcp", ":5309")
 	if err != nil {
 		log.Println("there was an error:", err)
 	}
