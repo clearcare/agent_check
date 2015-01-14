@@ -68,7 +68,8 @@ func Listen(ln net.Listener, command chan []byte) {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			continue
+			log.Println("there was an error:", err)
+			break
 		}
 		go handleListen(conn, command)
 	}
@@ -79,13 +80,13 @@ func main() {
 	command := make(chan []byte, 1)
 	ln, err := net.Listen("tcp", ":5309")
 	if err != nil {
-		log.Println("there was an error:", err)
+		log.Fatalln("there was an error:", err)
 	}
 	go Talk(ln, command)
 
 	ln2, err := net.Listen("tcp", ":8675")
 	if err != nil {
-		log.Println("there was an error:", err)
+		log.Fatalln("there was an error:", err)
 	}
 	go Listen(ln2, command)
 
