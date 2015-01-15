@@ -7,19 +7,18 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"time"
 
-	linuxproc "github.com/c9s/goprocinfo/linux"
+	systemstat "bitbucket.org/bertimus9/systemstat"
 )
 
 func get_idle() (out int) {
-	stat, err := linuxproc.ReadStat("/proc/stat")
-	if err != nil {
-		log.Fatal("stat read fail")
-	}
-	all := stat.CPUStatAll
-	total := all.User + all.Nice + all.System + all.Idle + all.IOWait +
-		all.IRQ + all.SoftIRQ + all.Steal + all.Guest + all.GuestNice
-	idlePercent := 100.00 * (float64(all.Idle) / float64(total))
+	sample1 := systemstat.GetCPUSample()
+	time.Sleep(100 * time.Millisecond)
+	sample2 := systemstat.GetCPUSample()
+	avg := systemstat.GetSimpleCPUAverage(sample1, sample2)
+	idlePercent := avg.IdlePct
+	//log.Println("idlePercent:", idlePercent)
 	return int(idlePercent)
 }
 
