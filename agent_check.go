@@ -17,6 +17,7 @@ func get_idle() (out int) {
 	total := all.User + all.Nice + all.System + all.Idle + all.IOWait +
 		all.IRQ + all.SoftIRQ + all.Steal + all.Guest + all.GuestNice
 	idlePercent := 100.00 * (float64(all.Idle) / float64(total))
+	log.Println("idlePercent:", idlePercent)
 	return int(idlePercent)
 }
 
