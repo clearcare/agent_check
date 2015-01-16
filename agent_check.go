@@ -59,7 +59,7 @@ func handleTalk(conn net.Conn, command <-chan string) {
 	//log.Println("in handleTalk")
 	defer conn.Close()
 	idle := strconv.Itoa(get_idle())
-	io.WriteString(conn, CommandStr+" "+idle+" \n")
+	io.WriteString(conn, CommandStr+" "+idle+"% \n")
 	return
 }
 
