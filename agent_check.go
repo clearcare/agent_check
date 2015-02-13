@@ -14,6 +14,7 @@ import (
 	systemstat "bitbucket.org/bertimus9/systemstat"
 )
 
+//TODO this should NOT be a global
 var CommandStr string
 
 func main() {
@@ -55,6 +56,7 @@ func get_idle() (out int) {
 	return int(idlePercent)
 }
 
+//TODO this should pull the command string from the channel
 func handleTalk(conn net.Conn, command <-chan string) {
 	//log.Println("in handleTalk")
 	defer conn.Close()
