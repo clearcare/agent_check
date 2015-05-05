@@ -52,13 +52,10 @@ func get_idle() (out int) {
 	sample2 := systemstat.GetCPUSample()
 	avg := systemstat.GetSimpleCPUAverage(sample1, sample2)
 	idlePercent := avg.IdlePct
-	//log.Println("idlePercent:", idlePercent)
 	return int(idlePercent)
 }
 
-//TODO this should pull the command string from the channel
 func handleTalk(conn net.Conn, command <-chan string) {
-	//log.Println("in handleTalk")
 	defer conn.Close()
 	idle := strconv.Itoa(get_idle())
 	io.WriteString(conn, CommandStr+" "+idle+"% \n")
@@ -66,7 +63,6 @@ func handleTalk(conn net.Conn, command <-chan string) {
 }
 
 func handleListen(conn net.Conn, command chan string) {
-	//log.Println("in handleListen")
 	defer conn.Close()
 	line, err := bufio.NewReader(conn).ReadString('\n')
 	if err != nil {
@@ -79,7 +75,6 @@ func handleListen(conn net.Conn, command chan string) {
 }
 
 func Talk(ln net.Listener, command chan string) {
-	//log.Println("in talk")
 	defer ln.Close()
 	for {
 		conn, err := ln.Accept()
@@ -92,7 +87,6 @@ func Talk(ln net.Listener, command chan string) {
 }
 
 func Listen(ln net.Listener, command chan string) {
-	//log.Println("in listen")
 	defer ln.Close()
 	for {
 		conn, err := ln.Accept()
