@@ -20,4 +20,4 @@ READY OK
 [user@aServer ~]$ nc localhost 5309  
 READY 100%  
 
-
+agent_check can be run from the command line or with supervisord and supervisord-like utilities.
